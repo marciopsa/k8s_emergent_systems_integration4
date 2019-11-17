@@ -1,0 +1,113 @@
+component provides App requires io.Output out, net.http.HTTPRequest http, data.IntUtil iu,
+	time.Calendar calendar, time.DateUtil dateUtil, time.Timer timer {
+
+	char server[] = "35.239.83.45"
+	//char server[] = "localhost"
+	int NUM_THREADS = 10
+	int NUM_THREADS_ARRAY[] = new int[](100, 200, 300, 400, 500, 600, 700, 800, 900, 1000) //(10, 20, 30, 40, 50, 100, 150, 200, 250, 300)
+	char url[]
+	HTTPResponse response
+
+
+	int average_response_time = 0
+	int accumulated_response_time = 0
+	int temp_response_time1 = 0
+	int request_counter = 0
+	//int temp_response_time2 = 0
+
+
+	void notify_stackdriver() {
+		average_response_time = accumulated_response_time/request_counter
+		char average_response_time_str[] = iu.intToString(average_response_time)
+
+		//char response_time_str[] = iu.intToString(response_time)
+
+		url = "http://35.223.150.4:8081/$(average_response_time_str)"
+		out.println("\nbefore request1111111: $(url)")
+		out.println("request_counter..: $(iu.intToString(request_counter))")
+		out.println("average_response_time_str..: $(average_response_time_str)")
+		response = http.get(url, null)
+		out.println("\nafter request1111111")
+		//temp_response_time1 = 0
+		
+		accumulated_response_time = 0
+		average_response_time = 0
+		request_counter = 0
+	}	
+
+	void makeRequest(char resource[], int id, int i) {
+		DateTime start = calendar.getTime()
+		DateTime firstByte = new DateTime()
+		HTTPResponse resp = http.get(new char[]("http://", server, ":2020//collector/datafromresource/1"), null)
+		DateTime end = calendar.getTime()
+		DateTime diff = dateUtil.diff(start, end)
+		
+		int response_time = dateUtil.toMilliseconds(diff)
+		accumulated_response_time = accumulated_response_time + response_time
+		request_counter++
+		/*if (request_counter == 50) {
+			notify_stackdriver()
+		} */
+		
+
+		out.println("[$(iu.intToString(id))]: $(iu.intToString(dateUtil.toMilliseconds(diff)))")
+		out.println("resp.content..: $(resp.content)")
+		out.println("response_time..: $(iu.intToString(response_time))")
+		out.println("accumulated_response_time..: $(iu.intToString(accumulated_response_time))")
+		out.println("request_counter..: $(iu.intToString(request_counter))")		
+	}
+
+	int App:main(AppParam params[]) {
+		Thread t[] //= new Thread[NUM_THREADS]
+		for (int round = 0; round < 10; round++) {
+		   NUM_THREADS = NUM_THREADS_ARRAY[round]
+		   t = new Thread[NUM_THREADS]
+		   for (int i = 0; i < 100; i++) {
+			timer.sleep(1000) 
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter] = asynch::makeRequest("", counter, i) }
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter].join() }
+		   }
+		   out.println("Modifying the workload...  next round: $(iu.intToString(round+1))")
+		   timer.sleep(60000) 	
+		}
+		return 0
+	}
+
+	/*int App:main2(AppParam params[]) {
+		Thread t[] //= new Thread[NUM_THREADS]
+		for (int round = 0; round < 10; round++) {
+		   NUM_THREADS = NUM_THREADS_ARRAY[round]
+		   t = new Thread[NUM_THREADS]
+		   for (int i = 0; i < 100; i++) {
+			timer.sleep(550) 
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter] = asynch::makeRequest("", counter, i) }
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter].join() }
+		   }
+		}
+		return 0
+	}*/
+
+
+	/*int App:main(AppParam params[]) {
+		Thread t[] = new Thread[NUM_THREADS]
+		for (int round = 0; round < 1; round++) {
+		   NUM_THREADS = NUM_THREADS_ARRAY[round]
+		   for (int i = 0; i < 100; i++) {
+			timer.sleep(550) 
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter] = asynch::makeRequest("", counter) }
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter].join() }
+		   }
+		}
+		return 0
+	}*/
+
+	/*int App:main(AppParam params[]) {
+		Thread t[] = new Thread[NUM_THREADS]
+		while(true) {
+			timer.sleep(1000) 
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter] = asynch::makeRequest("", counter) }
+			for (int counter = 0; counter < NUM_THREADS; counter++) { t[counter].join() }
+		}
+		return 0
+	}*/
+}

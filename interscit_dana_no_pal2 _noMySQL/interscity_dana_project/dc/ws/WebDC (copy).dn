@@ -1,0 +1,62 @@
+/* WebDC.dn
+ * 
+ * This works as a dispatcher to send data to microservices.
+ *
+ */
+component provides ws.Web:nfrp requires io.Output out, data.StringUtil strUtil, 
+	data_collector.DataCollectorManager dataCollectorManager {
+
+	bool match(char path[], char expr[]) {
+		String helper[] = strUtil.explode(path, "?")
+		String dirs[] = strUtil.explode(helper[0].string, "/")
+		String exprDirs[] = strUtil.explode(expr, "/")
+		if (dirs.arrayLength != exprDirs.arrayLength) { return false }
+		for (int i = 0; i < exprDirs.arrayLength; i++) {
+			if ((dirs[i].string != exprDirs[i].string) && (exprDirs[i].string != "*")) {
+				return false
+			}
+		}
+		return true
+	}
+
+	void failed(DocStream s) {
+		s.write("{\"response\" : \"failed\"}")
+	}
+
+	bool Web:get(char path[], DocStream stream, HashTable params) {
+		// getting id from params
+		if (params == null) { failed(stream) }
+		String idStr = params.get("id")
+		char id[] = idStr.string
+		// handling request
+		if (match(path, "/collector/datafromresource/*")) {
+			//get the last data sent by resource defined by its ID.
+			dataCollectorManager.receiveDataFromResource(id, stream)
+		} else if (match(path, "/collector/resources/*/data")) {
+			//get historical data sent by resource defined by its ID.
+			dataCollectorManager.getAllDataFromResource(id, stream)
+		} else { failed(stream) }
+		return true
+	}
+
+	bool Web:post(char path[], char contentType[], byte content[], DocStream stream, HashTable params) {
+		// getting id from params
+		if (params == null) { failed(stream) }
+		String idStr = params.get("id")
+		char id[] = idStr.string
+		// handling requests
+		if (match(path, "/collector/data/*")) {
+			dataCollectorManager.storeData(content, id, stream)
+		} else { failed(stream) }
+		return true
+	}
+
+	String[] Web:urls() {
+		String exprs[] = new String[]()
+		exprs = new String[](exprs, new String("/collector/data/{id}"))
+		exprs = new String[](exprs, new String("/collector/datafromresource/{id}"))
+		// get historical data of a specific city resource.
+		exprs = new String[](exprs, new String("/collector/resources/{id}/data"))  
+		return exprs
+	}
+}
