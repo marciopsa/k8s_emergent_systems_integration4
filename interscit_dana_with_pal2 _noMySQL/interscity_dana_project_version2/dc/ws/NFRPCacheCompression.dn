@@ -1,0 +1,57 @@
+/* NFRPCacheCompression.dn 
+ *
+ * Author: Roberto Rodrigues Filho - Sept @ 2018
+ */
+component provides ws.Web, Service requires io.Output out, ws.Web:nfrp web, interceptor.DSInterceptor, 
+	cache.CacheHandler cache, compression.Compression compression, io.File {
+
+	implementation Service {
+		void Service:start() {
+			cache.clear()
+		}
+
+		void Service:stop() {
+			cache.clear()
+		}
+	}
+
+	implementation Web {
+		bool Web:get(char path[], DocStream stream, HashTable params) {
+			CachedData cD = cache.get(path)
+			if (cD != null) {
+				stream.write(cD.response)
+				return true
+			}
+			bool result
+			DSInterceptor interceptor = new DSInterceptor(null, null, false)
+			interceptor.set(stream)
+			result = web.get(path, interceptor, params)
+			//cache only if result is true
+			if ((result) && (interceptor.get() != null)) {
+				File f = new File("data2compress.data", File.FILE_ACCESS_WRITE)
+				f.write(interceptor.get())
+				f.close()	
+				char newName[] = compression.compressResource("data2compress.data")
+				f = new File(newName, File.FILE_ACCESS_READ)
+				byte buf[] = null
+				while (!f.eof()) { buf = new byte[](buf, f.read(1024)) }
+				f.close()
+				stream.write(buf)
+				CachedData newCD = new CachedData()
+				newCD.key = path
+				newCD.response = buf
+				cache.update(newCD)
+			}
+			return result
+		}
+
+		bool Web:post(char path[], char contentType[], byte content[], DocStream stream, HashTable params) {
+			cache.clear()
+			return web.post(path, contentType, content, stream, params)
+		}
+
+		String[] Web:urls() {
+			return web.urls()
+		}
+	}
+}

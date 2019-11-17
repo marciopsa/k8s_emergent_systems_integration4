@@ -1,0 +1,1 @@
+In this version of codes for apps and resources, we are interested in verify the general emergent behaviour in all three microservices (Resource Adaptor, Resource Catalog and Data Collector). We are not interest, in this moment, in testing the many possibilities of different scenarios like LFU_HV or HFU_LV etc.

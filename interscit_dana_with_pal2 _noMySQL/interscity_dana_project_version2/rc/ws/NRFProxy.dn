@@ -1,0 +1,18 @@
+/* NFRProxy.dn 
+ *
+ * Author: Roberto Rodrigues Filho - Sept @ 2018
+ */
+component provides ws.Web requires io.Output out, ws.Web:nfrp web {
+
+	bool Web:get(char path[], DocStream stream, HashTable params) {
+		return web.get(path, stream, params)
+	}
+
+	bool Web:post(char path[], char contentType[], byte content[], DocStream stream, HashTable params) {
+		return web.post(path, contentType, content, stream, params)
+	}
+
+	String[] Web:urls() {
+		return web.urls()
+	}
+}

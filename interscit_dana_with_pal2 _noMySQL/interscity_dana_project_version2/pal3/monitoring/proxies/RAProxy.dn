@@ -1,0 +1,69 @@
+const char debugMSG[] = "[@RAProxy]"
+
+component provides ws.Web, monitoring.BeingMonitored requires io.Output out,
+	ws.Web web, monitoring.Container, monitoring.ResponseTime,
+	data.StringUtil stringUtil, time.Timer, data.IntUtil iu {
+
+	static Container monitor
+
+	implementation BeingMonitored {
+		Event[] BeingMonitored:getEvents() {
+			if (monitor == null) { monitor = new Container() }
+			return monitor.getEvents()
+		}
+
+		Metric[] BeingMonitored:getMetrics() {
+			if (monitor == null) { monitor = new Container() }
+			return monitor.getMetrics()
+		}
+
+		void BeingMonitored:turnMonitorOn() {
+			if (monitor == null) { monitor = new Container() }
+			monitor.turnMonitorOn()
+		}
+
+		void BeingMonitored:turnMonitorOff() {
+			if (monitor == null) { monitor = new Container() }
+			monitor.turnMonitorOff()
+		}
+	}
+
+	implementation Web {
+		bool Web:get(char path[], DocStream stream, HashTable params) {
+			bool returnValue = false
+			if (monitor == null) {
+				monitor = new Container()
+				monitor.turnMonitorOn()
+			}
+			ResponseTime metric = new ResponseTime()
+			metric.start()
+			returnValue = web.get(path,stream,params)
+			metric.finish()
+			int result = metric.result()
+			monitor.addMetric("response_time", result, false)
+			monitor.addEvent(new char[]("get:", path), 1)
+			return returnValue
+		}
+
+		bool Web:post(char path[], char contentType[], byte content[], DocStream stream, HashTable params) {
+			bool returnValue = false
+			if (monitor == null) {
+				monitor = new Container()
+				monitor.turnMonitorOn()
+			}
+			ResponseTime metric = new ResponseTime()
+			metric.start()
+			returnValue = web.post(path,contentType, content, stream, params)
+			metric.finish()
+			int result = metric.result()
+			monitor.addMetric("response_time", result, false)
+			monitor.addEvent(new char[]("post:", path), 1)
+			return returnValue
+		}
+
+		String[] Web:urls() {
+			return web.urls()
+		}
+
+	}
+}
