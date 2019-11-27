@@ -9,22 +9,13 @@
  * Author: Marcio P Sa - May @ 2018
  * Changes: Roberto Rodrigues Filho - Sept @ 2018
  */
-
-
-
 const char debugMSG[] = "[@DataCollectorManager]"
- 
 
-
-// ----------------------------------- interscity-dana-k8s-noPAL2-noMySQL --------------------------
+// ----------------------------------- interscity-dana-k8s-withPAL2-noMySQL --------------------------
 
 component provides data_collector.DataCollectorManager requires io.Output out,
-	data.json.JSONEncoder encoder, encoding.Encoder:uri codifier, //data.mysql.MySQL,
+	data.json.JSONEncoder encoder, encoding.Encoder:uri codifier, //data.mysql.MySQL, 
 	monitoring.ResponseTime responseTime, data.IntUtil iu, net.http.HTTPRequest request, util.Math math {
-
-/* component provides data_collector.DataCollectorManager requires io.Output out,
-	data.json.JSONEncoder encoder, encoding.Encoder:uri codifier { */
-
 
 		int number_of_records = 0
 
@@ -36,47 +27,23 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		//int average_response_time = 0
 		int accumulated_response_time = 0
 		int temp_response_time1 = 0
-		//int temp_response_time2 = 0
-
-		/*void notify_stackdriver_old1() {
-			char accumulated_response_time_str[] = iu.intToString(accumulated_response_time)
-			url = "http://35.224.173.213:8083/$(accumulated_response_time_str)"
-			out.println("\nbefore request1111111: $(url)")
-			response = request.get(url, null)
-			out.println("\nafter request1111111")
-			temp_response_time1 = 0
-			//temp_response_time2 = 0
-			accumulated_response_time = 0
-			request_counter = 0
-		}*/
-
-	/*void notify_stackdriver_old2() {
-			char accumulated_response_time_str[] = iu.intToString(accumulated_response_time)
-			url = "http://35.224.173.213:8083/$(accumulated_response_time_str)"
-			out.println("\nbefore request1111111: $(url)")
-			response = request.get(url, null)
-			out.println("\nafter request1111111")
-			temp_response_time1 = 0
-			//temp_response_time2 = 0
-			accumulated_response_time = 0
-			request_counter = 0
-		}*/
 
 
-	void notify_stackdriver() {
-			/* char accumulated_response_time_str[] = iu.intToString(accumulated_response_time)
-			//url = "http://35.224.173.213:8083/$(accumulated_response_time_str)"
-			url = "http://35.223.150.4:8081/$(accumulated_response_time_str)"
-			out.println("\nbefore request1111111: $(url)")
-			response = request.get(url, null)
-			out.println("\nafter request1111111")
-			temp_response_time1 = 0
-		
-			accumulated_response_time = 0
-			request_counter = 0 */
+
+	/*void DataCollectorManager:storeData(byte content[], char id[], DocStream s) {
+
+		out.println("Inside storeData, id sent: $(id)")
+		//if (number_of_records < 200) {
+		if (number_of_records < 1) {
+			out.println("Inside storeData2222, id sent: $(id)")
+			MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
+			mysql.execute(new char[]("INSERT INTO data (value, uuid) VALUES (\"", codifier.encode(content)
+				,"\", \"", id ,"\");"))
+			mysql.close()
+
+			number_of_records++
 		}
-
-
+	}*/
 
 	void DataCollectorManager:storeData(byte content[], char id[], DocStream s) {
 
@@ -94,10 +61,7 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		//url = "http://34.67.154.161:2020/collector/data/1"
 		//url = "http://localhost:2022/collector/data/1"  // Port 2022 is the communication port to the MySQL database of DC.
 		//url = "http://35.239.162.227:2022/collector/data/1"
-
-
-		//url = "http://104.154.21.240:2022/collector/data/1"
-		url = "http://35.192.119.220:2022/collector/data/1"
+		url = "http://104.154.21.240:2022/collector/data/1"
 		Header headers[] = null
 		//HTTPResponse response = request.post(url, null, content)
 
@@ -106,46 +70,25 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		response = request.post(url, null, content)
 		if((response.headers[0].value) == "HTTP/1.1 200 OK") { out.println("Data sent successfully333444!") }
 
-
-
-
-
-
 	}
 
-
-	/* char[] getAllDataSentFromResource(char resource_id[]) {
-		MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
-		char query[] = new char[]("SELECT * FROM data WHERE uuid = \"", resource_id, "\" ORDER BY id_data DESC LIMIT 200;")
-		mysql.execute(query)
-		MySQLRow rows[] = mysql.fetchAll()
-		    char jsonResp[] = encoder.jsonFromArray(rows, null)
-		mysql.close()
-		return jsonResp
-	} */
-
 	void DataCollectorManager:getAllDataFromResource(char resource_id[], DocStream stream) {
-		
-		
-		url = "http://35.192.119.220:2022/collector/resources/1/data"
-		
-		response = request.get(url, null)
-		//timer.sleep(1000)   //100 = 100 miliseconds
-		//out.println("Data received 1:")
-		//char resp[] = iu.intToString(response.content)
-		out.println("response.content 44566..: $(response.content)")
-
-		stream.write(response.content)
-		//responseTime.finish()
-		out.println("\nResponse Time1: $(iu.intToString(responseTime.result())) ms")
-
 		/*char json_DataToBeSent[] = getAllDataSentFromResource(resource_id)
 		if (json_DataToBeSent == null) {
 			stream.write("resource data not found")
 		} else {
 			stream.write(json_DataToBeSent)
-		} */
+		}*/
 	}
+
+	/*void DataCollectorManager:receiveDataFromResource(char resource_id[], DocStream stream) {
+		CityResourceData jsonBus_DataToBeSent = getLastDataSentFromResource(resource_id)
+		if (jsonBus_DataToBeSent == null) {
+			stream.write("resource data not found")
+		} else {
+			stream.write(jsonBus_DataToBeSent.resourceData)
+		}
+	}*/
 
 	void request_preprocessing() {
 		dec x = 0.0001
@@ -163,10 +106,7 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		request_preprocessing()  // call the method to do a pre-processing on request.
 
 		//url = "http://35.239.162.227:2022//collector/datafromresource/1"
-		//url = "http://104.154.21.240:2022//collector/datafromresource/1"
-		url = "http://35.192.119.220:2022//collector/datafromresource/1"
-		
-		//url = "http://35.192.119.220:2022//collector/datafromresource/1"
+		url = "http://104.154.21.240:2022//collector/datafromresource/1"
 		response = request.get(url, null)
 		//timer.sleep(1000)   //100 = 100 miliseconds
 		//out.println("Data received 1:")
@@ -191,7 +131,7 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 
 
 		if (request_counter > 49) {
-			notify_stackdriver()
+			//notify_stackdriver()
 		} else {
 			temp_response_time1 = responseTime.result()
 			if (accumulated_response_time == 0) {
@@ -204,13 +144,20 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 			request_counter++
 		}
 
-
-
-
-
-
-
 	}
+
+
+	/*CityResourceData getLastDataSentFromResource(char resource_id[]) {
+		MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
+		char query[] = new char[]("SELECT * FROM data WHERE uuid = \"", resource_id, "\" ORDER BY id_data DESC LIMIT 1;")
+		mysql.execute(query)
+		MySQLRow rows[] = mysql.fetchAll()
+		CityResourceData lastDataFromResource = new CityResourceData()
+		lastDataFromResource.resourceData = codifier.decode(rows[0].fields[1].value)
+		byte storeContent[] = lastDataFromResource.resourceData
+		mysql.close()
+		return lastDataFromResource
+	}*/
 
 	CityResourceData getLastDataSentFromResource(char resource_id[]) {
 		/* MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
@@ -236,23 +183,13 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		return null
 	}
 
-	/* CityResourceData getLastDataSentFromResource(char resource_id[]) {
+	/*char[] getAllDataSentFromResource(char resource_id[]) {
 		MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
-		char query[] = new char[]("SELECT * FROM data WHERE uuid = \"", resource_id, "\" ORDER BY id_data DESC LIMIT 1;")
+		char query[] = new char[]("SELECT * FROM data WHERE uuid = \"", resource_id, "\" ORDER BY id_data DESC LIMIT 200;")
 		mysql.execute(query)
 		MySQLRow rows[] = mysql.fetchAll()
-		CityResourceData lastDataFromResource = new CityResourceData()
-		lastDataFromResource.resourceData = codifier.decode(rows[0].fields[1].value)
-		byte storeContent[] = lastDataFromResource.resourceData
+		    char jsonResp[] = encoder.jsonFromArray(rows, null)
 		mysql.close()
-		/* out.println("Accessing getLastDataSentFromResource0000...")
-		CityResourceData lastDataFromResource = new CityResourceData()
-		lastDataFromResource.resourceData = codifier.decode("8899")
-		//lastDataFromResource.response_test = "valor de teste1"
-		byte storeContent[] = lastDataFromResource.resourceData
-
-		return lastDataFromResource
-	} */
-
-	
+		return jsonResp
+	}*/
 }

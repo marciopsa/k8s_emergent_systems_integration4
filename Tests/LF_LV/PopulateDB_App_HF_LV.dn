@@ -117,7 +117,7 @@ component provides App requires net.http.HTTPRequest request, data.json.JSONEnco
 
 		//while(true) {
  			//url = "http://localhost:2020//collector/datafromresource/$(formatedResponse.uuid)"
- 			url = "http://localhost:2020//collector/datafromresource/1"
+ 			//url = "http://localhost:2020//collector/datafromresource/1"
 			//url = "http://35.225.34.38:2020//collector/datafromresource/1"
 			url = "http://34.68.79.114:2020//collector/datafromresource/1"
 			//url = "http://35.232.10.207:2020//collector/datafromresource/1"

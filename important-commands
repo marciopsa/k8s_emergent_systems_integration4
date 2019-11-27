@@ -65,11 +65,16 @@ git status
 
 git add .
 
+:~/git/k8s_emergent_systems_integration3$ git rm -rf --cached MySQL_of_DC/interscity_dana_project123/
+:~/git/k8s_emergent_systems_integration3$ git add MySQL_of_DC/interscity_dana_project123/
+:~/git/k8s_emergent_systems_integration3$ git commit -am "update3"
+
 git commit 
 
 git commit -m "initial data."
 
 git push origin master
+
 
 
 

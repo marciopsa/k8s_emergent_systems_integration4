@@ -63,8 +63,8 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 
 	void DataCollectorManager:storeData(byte content[], char id[], DocStream s) {
 
-		//if (number_of_records < 200) {
-	 	if (number_of_records < 1) {
+		if (number_of_records < 200) {
+	 	//if (number_of_records < 1) {
 			MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
 			mysql.execute(new char[]("INSERT INTO data (value, uuid) VALUES (\"", codifier.encode(content)
 				,"\", \"", id ,"\");"))
@@ -75,12 +75,12 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 	}
 
 	void DataCollectorManager:getAllDataFromResource(char resource_id[], DocStream stream) {
-		/* char json_DataToBeSent[] = getAllDataSentFromResource(resource_id)
+		char json_DataToBeSent[] = getAllDataSentFromResource(resource_id)
 		if (json_DataToBeSent == null) {
 			stream.write("resource data not found")
 		} else {
 			stream.write(json_DataToBeSent)
-		} */
+		} 
 	}
 
 	void DataCollectorManager:receiveDataFromResource(char resource_id[], DocStream stream) {
@@ -152,7 +152,7 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		return lastDataFromResource
 	} */
 
-	/* char[] getAllDataSentFromResource(char resource_id[]) {
+	char[] getAllDataSentFromResource(char resource_id[]) {
 		MySQL mysql = new MySQL("localhost", 0, "root", "root", "data_collector")
 		char query[] = new char[]("SELECT * FROM data WHERE uuid = \"", resource_id, "\" ORDER BY id_data DESC LIMIT 200;")
 		mysql.execute(query)
@@ -160,5 +160,5 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 		    char jsonResp[] = encoder.jsonFromArray(rows, null)
 		mysql.close()
 		return jsonResp
-	} */
+	} 
 }
