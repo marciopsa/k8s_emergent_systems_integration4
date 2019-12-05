@@ -1,5 +1,9 @@
 
 
+# To clean local Docker image registry
+sudo docker system prune -a
+sudo docker rmi 'docker-images -q' (this command didn't work!!)
+
 # To create the Interscity-InteractiveAssembly Docker image
 sudo docker build -t marciopsa/interscity_pal_k8s_1 .
 
@@ -83,6 +87,13 @@ git push origin master
 mysql> use data_collector;
 mysql> select * from data;
 
+
+Inside a container, use:
+
+(on the cloud shell) ~$ kubectl exec -it <pod's id> -- /bin/bash
+~$ mysql -u root <enter>
+mysql> use data_collector;
+mysql> select * from data;
 
 
 

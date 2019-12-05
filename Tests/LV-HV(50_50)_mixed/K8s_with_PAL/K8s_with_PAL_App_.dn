@@ -51,7 +51,7 @@ component provides App requires io.Output out, net.http.HTTPRequest http, data.I
 		//flag = 0
 		
 		while(true) {
-			timer.sleep(2000) 
+			timer.sleep(100) 
 			DateTime start = calendar.getTime()
  			response = http.get(url, null)
 			DateTime end = calendar.getTime()

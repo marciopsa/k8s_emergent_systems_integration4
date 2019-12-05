@@ -97,7 +97,9 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 
 
 		//url = "http://104.154.21.240:2022/collector/data/1"
-		url = "http://35.192.119.220:2022/collector/data/1"
+		//url = "http://35.192.119.220:2022/collector/data/1"
+		url = "http://35.223.215.188:2022/collector/data/1"
+
 		Header headers[] = null
 		//HTTPResponse response = request.post(url, null, content)
 
@@ -127,7 +129,8 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 	void DataCollectorManager:getAllDataFromResource(char resource_id[], DocStream stream) {
 		
 		
-		url = "http://35.192.119.220:2022/collector/resources/1/data"
+		//url = "http://35.192.119.220:2022/collector/resources/1/data"
+		url = "http://35.223.215.188:2022/collector/resources/1/data"
 		
 		response = request.get(url, null)
 		//timer.sleep(1000)   //100 = 100 miliseconds
@@ -164,7 +167,8 @@ component provides data_collector.DataCollectorManager requires io.Output out,
 
 		//url = "http://35.239.162.227:2022//collector/datafromresource/1"
 		//url = "http://104.154.21.240:2022//collector/datafromresource/1"
-		url = "http://35.192.119.220:2022//collector/datafromresource/1"
+		//url = "http://35.192.119.220:2022//collector/datafromresource/1"
+		url = "http://35.223.215.188:2022//collector/datafromresource/1"
 		
 		//url = "http://35.192.119.220:2022//collector/datafromresource/1"
 		response = request.get(url, null)
