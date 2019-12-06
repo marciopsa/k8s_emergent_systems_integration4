@@ -6,7 +6,7 @@ import time
 import concurrent.futures
 import datetime
 
-NUM_THREADS_ARRAY = [10]#, 20, 50, 100, 150, 200]#[10, 20, 30, 40, 50, 100, 150, 200]#, 250]#, 300]#, 400, 500, 600, 700, 800, 900, 1000]
+NUM_THREADS_ARRAY = [10, 20, 30, 40, 50, 100, 150, 200]#, 250]#, 300]#, 400, 500, 600, 700, 800, 900, 1000]
 
 def millis_interval(start, end):
     """start and end are datetime instances"""
@@ -24,8 +24,8 @@ def make_request(id):
     #resp = req.get("http://35.184.118.160:2020//collector/resources/1/data")
     
 
-    #resp = req.get("http://35.184.118.160:2020//collector/resources/1/data")
-    resp = req.get("http://35.224.99.170:2020//collector/datafromresource/1")
+    #resp = req.get("http://35.232.10.207:2020//collector/resources/1/data")
+    resp = req.get("http://35.223.180.209:2020//collector/datafromresource/1")
 
     flag = 0
     end = datetime.datetime.now()
