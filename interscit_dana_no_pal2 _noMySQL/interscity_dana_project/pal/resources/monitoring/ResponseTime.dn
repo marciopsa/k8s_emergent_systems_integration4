@@ -1,5 +1,0 @@
-interface ResponseTime {
-	void start()
-	void finish()
-	int result()
-}

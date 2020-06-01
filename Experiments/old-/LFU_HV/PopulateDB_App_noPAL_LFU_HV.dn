@@ -1,0 +1,142 @@
+uses data.String
+
+/* data ResourceCapabilitiesToBeSendToApplication {
+	char id[]
+	char name[]
+	char function[]
+	char description[]
+}
+
+data ResponseToApplication {
+	ResourceCapabilitiesToBeSendToApplication resourceCapabilitiesToBeSendToApplication[]
+} */
+
+
+
+data ResourceCapabilitiesToBeSendToApplication {
+	char id[]
+	char name[]
+	char function[]
+	char description[]
+}
+
+data FinalResponse {
+	ResourceCapabilitiesToBeSendToApplication resourceCapabilitiesToBeSendToApplication[]
+}
+
+data ResponseToApplication {
+	FinalResponse resp
+}
+
+
+
+data ResourceMetaData {
+	char uuid[]
+	char description[]
+	String capabilities[]
+	char status[]
+	dec lat
+	dec lon
+}
+
+data InterSCityData {
+	ResourceMetaData data_
+}
+
+
+data ResponseToResource {
+	char response[]
+	char uuid[]
+	char device[]
+	char description[]
+	String capabilities[]
+  char status[]
+  dec lat
+  dec lon
+  char country[]
+  char state[]
+  char city[]
+  char neighborhood[]
+  char postal_code[]
+  char created_at[]
+  char updated_at[]
+  int id
+}
+
+component provides App requires net.http.HTTPRequest request, data.json.JSONEncoder encoder, io.Output out,
+															data.IntUtil iu, data.DecUtil du, data.json.JSONParser parser, time.Timer timer {
+
+	int App:main(AppParam params[]) {
+		char url[]
+		HTTPResponse response
+
+		out.println("Accessing Data Collector...")
+		//================================================================================
+		// ---------- Sending data to Data Collector directly ----------------
+
+		char jsonBus_DataToBeSent[] = new char[]("{",
+		"\"data\": {",
+				"\"public_bus\": [",
+					"{",
+						"\"location\": {",
+							"\"lat\": -10.00032,",
+							"\"lon\": -23.559615",
+							"},",
+						"\"speed\": 54,",
+						"\"uuid\": 1,",
+						"\"bus_line\": \"875c-10-1\",",
+						"\"timestamp\": \"2017-06-14T17:52:25.428Z\"",
+					"}",
+				"]",
+			"}",
+		"}")
+
+
+		for(int i = 0; i < 50; i++) {   //while (true) {
+		//for(int i = 0; i < 1; i++) {  
+			out.println("Sending data to the InterSCity Platform...")
+			//out.println("Sent UUID: $(formatedResponse.uuid)")
+
+			url = "http://35.202.100.82:2020/collector/data/1"
+			//url = "http://35.223.180.209:2020/collector/data/1"
+
+			//url = "http://35.184.118.160:2020/collector/data/1"
+			//url = "http://34.68.79.114:2020/collector/data/1"
+			//url = "http://35.225.34.38:2020/collector/data/1"
+			//url = "http://localhost:2020/collector/data/1"
+			//url = "http://35.232.10.207:2020/collector/data/1"
+	 		Header headers[] = null
+	 		//HTTPResponse response = request.post(url, null, content)
+
+			//url = "http://localhost:2018/adaptor/resources/$(formatedResponse.uuid)/data"
+			response = request.post(url, null, jsonBus_DataToBeSent)
+			if((response.headers[0].value) == "HTTP/1.1 200 OK") { out.println("Data sent successfully! Iteration $(iu.intToString(i))") }
+			 //timer.sleep(6000)
+		}
+
+
+		//================================================================================
+ 	 	// ---------- Getting data from Data Collector directly ----------------
+
+		
+		while(true) {
+ 			
+			//url = "http://35.232.10.207:2020//collector/datafromresource/1"
+			url = "http://35.202.100.82:2020//collector/datafromresource/1"
+			//url = "http://35.223.180.209:2020//collector/datafromresource/1"
+
+			//url = "http://35.184.118.160:2020//collector/resources/1/data"
+			//url = "http://35.232.10.207:2020//collector/resources/1/data"
+			
+ 			response = request.get(url, null)
+ 			//timer.sleep(1000)   //100 = 100 miliseconds
+ 			//out.println("Data received 1:")
+ 			//char resp[] = iu.intToString(response.content)
+ 			out.println("response.content 12345..: $(response.content)")
+			//out.println("iteration..: $(iu.intToString(i))")
+ 		}
+
+
+	 	return 0
+  }
+}

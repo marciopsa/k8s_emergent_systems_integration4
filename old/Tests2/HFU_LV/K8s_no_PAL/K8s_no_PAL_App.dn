@@ -1,0 +1,300 @@
+/* K8s_no_PAL_App.dn
+ *
+ * High frequency of updates, low volume of data client.
+ * Adapted from Roberto's code (:
+ * PS: requests are always *constantly* (no intervals) being cast.
+ *
+ * Author: Marcio Pereira de Sa - December @ 2019
+ */
+
+uses data.String
+
+const char debugMSG[] = "[@HFU_LV_NOPAL]"
+
+// tunning constants
+const int NUM_SQ_REQUEST = 1
+const int SLEEP_INTERVAL = 500
+const char SERVER_ADDRESS[] = "35.224.99.170"
+const char STACKDRIVER_SERVER_ADDRESS[] = "35.238.191.128"
+
+
+component provides App requires io.Output out, net.http.HTTPRequest http, data.IntUtil iu,
+	time.Calendar calendar, io.TextFile, io.File, io.Input in, time.DateUtil dateUtil, time.Timer timer {
+
+	TextFile file[]
+	bool flag = true
+	char request_url[]
+	char update_url[]
+	HTTPResponse response
+	HTTPResponse update_response
+	int average_response_time = 0
+	int accumulated_response_time = 0
+	int total_response_time = 0
+	int total_requests = 0
+	int temp_response_time1 = 0
+	int request_counter = 0
+
+	int MAX_NUM_OF_REQUESTS = 2
+	int NUM_OF_REQUESTS = 0	
+
+	void notify_stackdriver() {
+		average_response_time = accumulated_response_time/request_counter
+		char average_response_time_str[] = iu.intToString(average_response_time)
+		total_response_time = accumulated_response_time
+		//char stackdriver_url[] = "http://35.238.191.128:8081/$(average_response_time_str)"
+		char stackdriver_url[] = new char[]("http://", STACKDRIVER_SERVER_ADDRESS, ":8081/$(average_response_time_str)")
+		out.println("\nbefore ....---: $(stackdriver_url)")
+		out.println("request_counter..: $(iu.intToString(request_counter))")
+		out.println("average_response_time_str..: $(average_response_time_str)")
+		response = http.get(stackdriver_url, null)
+		out.println("\nafter ....---:")		
+		accumulated_response_time = 0
+		average_response_time = 0
+		request_counter = 0
+	}
+
+	char[] formatTimeStamp(DateTime dt) {
+		return new char[]("[", iu.intToString(dt.hour), ":",
+			iu.intToString(dt.minute), ":", iu.intToString(dt.second), ":", iu.intToString(dt.millisecond), "]")
+	}
+
+	//void triggerRequests(TextFile file, char url[]) {
+	void triggerRequests(char url[]) {
+		DateTime dt1 = null
+		DateTime dt2 = null
+		int result = 0
+		dt1 = calendar.getTime()
+		HTTPResponse response1 = http.get(url, null)
+		dt2 = calendar.getTime()
+		
+		if ((dt1 != null) && (dt2 != null)) {
+			result = dateUtil.toMilliseconds(dateUtil.diff(dt1, dt2))
+		}
+
+
+		//----------------------
+		accumulated_response_time = accumulated_response_time + result//response_time
+		request_counter++
+		total_requests++
+		if (request_counter == 1) {
+			notify_stackdriver()
+		} 
+		//------------------------
+
+		//int pos = file.getPos()
+		//file.setPos(pos)
+
+		file[0].writeLine(new char[](formatTimeStamp(dt2), " ", iu.intToString(result)))
+	}
+
+	void start(char payload[]) {
+		//TextFile file[] = new TextFile[1]
+		file = new TextFile[1]
+		request_url = new char[]("http://", SERVER_ADDRESS, ":2020//collector/datafromresource/1")
+		update_url = new char[]("http://", SERVER_ADDRESS, ":2020/collector/data/1")
+		//requestURL[] = new char[]("http://", SERVER_ADDRESS, ":2020//collector/datafromresource/", uuid)
+		//updateURL[] = new char[]("http://", SERVER_ADDRESS, ":2018/adaptor/resources/", uuid, "/data")
+
+		
+		for (int i = 0; i < 1; i++) {
+			file[i] = new TextFile(new char[]("HFU_LV_NOPAL_RESULTS/request-file-burst-", iu.intToString(i+1111), ".data"),
+				File.FILE_ACCESS_WRITE)
+		}
+		//int file_line=1//2
+		//int pos = 0// 17
+		while (flag) {
+			for (int i = 0; i < NUM_SQ_REQUEST; i++) {
+				//triggerRequests(file[0], request_url)
+				triggerRequests(request_url)
+				
+				/*file[0].close()  // new code!!!!!!!!!!!!!!!!!!!!!!
+				//file.File("HFU_LV_NOPAL_RESULTS/request-file-burst-1.data", WRITE)
+				//File(char fn[], byte accessType)
+				file[0] = new TextFile(new char[]("HFU_LV_NOPAL_RESULTS/request-file-burst-1.data"),
+				   File.FILE_ACCESS_WRITE)
+				
+				//pos = pos * file_line
+				pos = file[0].getPos()
+				file[0].setPos(pos)*/
+				
+				//file_line++ 
+			}
+			http.post(update_url, null, payload)
+			timer.sleep(SLEEP_INTERVAL)
+		}
+		/*for (int i = 0; i < 1; i++) {
+			file[i].close()
+		}*/
+	}
+
+	/*void notify_stackdriver() {
+		average_response_time = accumulated_response_time/request_counter
+
+		char average_response_time_str[] = iu.intToString(average_response_time)
+
+		total_response_time = accumulated_response_time
+
+		char url1[] = "http://35.238.191.128:8081/$(average_response_time_str)"
+
+		out.println("\nbefore ....---: $(url1)")
+
+		out.println("request_counter..: $(iu.intToString(request_counter))")
+
+		out.println("average_response_time_str..: $(average_response_time_str)")
+
+		response = http.get(url1, null)
+
+		out.println("\nafter ....---:")		
+
+		accumulated_response_time = 0
+
+		average_response_time = 0
+
+		request_counter = 0
+
+	}*/	
+		
+	
+	int App:main(AppParam params[]) {
+		/* --------------ADDING DATA--------------*/
+		out.println("$(debugMSG)  Adding data to the database...")
+		// adding one location to the database...
+		char jsonBus_DataToBeSent[] = new char[]("{",
+		"\"data\": {",
+				"\"public_bus\": [",
+					"{",
+						"\"location\": {",
+							"\"lat\": -10.00032,",
+							"\"lon\": -23.559615",
+							"},",
+						"\"speed\": 54,",
+						"\"uuid\": 1,",
+						"\"bus_line\": \"875c-10-1\",",
+						"\"timestamp\": \"2017-06-14T17:52:25.428Z\"",
+					"}",
+				"]",
+			"}",
+		"}")
+		update_url = new char[]("http://", SERVER_ADDRESS, ":2020/collector/data/1")
+		response = http.post(update_url, null, jsonBus_DataToBeSent)
+		if((response.headers[0].value) == "HTTP/1.1 200 OK") { out.println("$(debugMSG) Data sent successfully!") }
+
+		//out.println("Press enter to start triggering requests...")
+		//in.readln()
+
+		/* --------------TRIGGERING REQUESTS-------------- */
+		out.println(new char[]("$(debugMSG) Starting requests... "))
+		DateTime startTime = calendar.getTime()
+
+		Thread startThread = asynch::start(jsonBus_DataToBeSent)
+		out.println("Press enter to finish...")
+		in.readln()
+		flag = false
+		DateTime endTime = calendar.getTime()
+		startThread.join()
+
+		
+		
+		int totalExecutionTime
+		
+		if ((startTime != null) && (endTime != null)) {
+			totalExecutionTime = dateUtil.toMilliseconds(dateUtil.diff(startTime, endTime))
+		}
+
+		file[0].writeLine(new char[]("Total Execution Time: ", iu.intToString(totalExecutionTime)))
+
+		for (int i = 0; i < 1; i++) {
+			file[i].close()
+		}
+
+		out.println("$(debugMSG) Client terminated successfully.")
+		return 0
+	}
+
+
+
+
+
+	/*int App:main(AppParam params[]) {
+		
+		//================================================================================
+ 	 	// ---------- Getting data from Data Collector directly ----------------
+
+		//url = "http://35.224.99.170:2020//collector/datafromresource/1"
+		request_url = "http://35.224.99.170:2020//collector/datafromresource/1"
+		update_url = "http://35.224.99.170:2020/collector/data/1"
+
+		//request_url = "http://35.184.118.160:2020//collector/resources/1/data"
+		//update_url = "http://35.184.118.160:2020/collector/data/1"
+		//flag = 0
+
+
+
+		char jsonBus_DataToBeSent[] = new char[]("{",
+		"\"data\": {",
+				"\"public_bus\": [",
+					"{",
+						"\"location\": {",
+							"\"lat\": -10.00032,",
+							"\"lon\": -23.559615",
+							"},",
+						"\"speed\": 54,",
+						"\"uuid\": 1,",
+						"\"bus_line\": \"875c-10-1\",",
+						"\"timestamp\": \"2017-06-14T17:52:25.428Z\"",
+					"}",
+				"]",
+			"}",
+		"}")
+
+		
+		
+		while(true) {
+			timer.sleep(500) 
+
+			if (NUM_OF_REQUESTS < MAX_NUM_OF_REQUESTS) {
+				NUM_OF_REQUESTS++
+			} else {
+				Header headers[] = null
+				update_response = http.post(update_url, null, jsonBus_DataToBeSent)
+
+
+				if (update_response == null) {
+ 					out.println("NULL2 ============================= NULL222")
+				} else {
+					if((update_response.headers[0].value) == "HTTP/1.1 200 OK") { 
+						out.println(" =========== Data sent successfully! Iteration =========") 
+					}
+				}
+
+				NUM_OF_REQUESTS = 0
+			}
+
+
+			DateTime start = calendar.getTime()
+ 			response = http.get(request_url, null)
+			DateTime end = calendar.getTime()
+			DateTime diff = dateUtil.diff(start, end)		
+
+			if (response == null) {
+ 				out.println("NULL ============================= NULL")
+			} else {				
+				out.println("response.content..-----: $(response.content)")
+				int response_time = dateUtil.toMilliseconds(diff)
+				accumulated_response_time = accumulated_response_time + response_time
+				request_counter++
+				total_requests++
+				if (request_counter == 1) {
+					notify_stackdriver()
+				} 
+				out.println("resp.content..: $(response.content)")
+				out.println("response_time..: $(iu.intToString(response_time))")
+				out.println("accumulated_response_time..: $(iu.intToString(accumulated_response_time))")
+				out.println("request_counter..: $(iu.intToString(request_counter))")
+				out.println("============= total_requests..: $(iu.intToString(total_requests))")
+				out.println("============= total_response_time..: $(iu.intToString(total_response_time))")
+			}	
+ 		}
+	 	return 0
+  	}*/
+}

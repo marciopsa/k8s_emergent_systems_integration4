@@ -1,4 +1,0 @@
-interface DescriptionHandler {
-	char[] decompress(char desc[])
-	char[] compress(char desc[])
-}

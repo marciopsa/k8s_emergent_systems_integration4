@@ -1,0 +1,65 @@
+[[390.703]] 
+[[377.34]] 
+[[377.627]] 
+[[374.909]] 
+[[379.54]] 
+[[388.825]] 
+[[398.065]] 
+[[380.898]] 
+[[372.367]] 
+[[373.887]] 
+[[375.746, 413.857]] 
+[[391.003, 447.653]] 
+[[412.178, 450.924]] 
+[[434.278, 385.365]] 
+[[384.652, 420.719]] 
+[[436.862, 380.065]] 
+[[383.775, 422.101]] 
+[[388.321, 422.586]] 
+[[426.711, 377.169]] 
+[[387.537, 424.216]] 
+[[396.705, 455.358, 536.97, 484.067]] 
+[[398.163, 479.05, 427.089, 507.276]] 
+[[399.498, 524.674, 431.927, 465.863]] 
+[[390.908, 518.942, 464.751, 413.701]] 
+[[380.007, 466.048, 412.456, 491.708]] 
+[[381.778, 416.941, 500.312, 444.992]] 
+[[434.572, 382.294, 522.786, 455.483]] 
+[[452.47, 398.496, 477.967, 516.579]] 
+[[375.952, 416.184, 505.975, 445.547]] 
+[[377.157, 412.725, 542.572, 447.36]] 
+average response time [0]390.703
+average response time [1]377.34
+average response time [2]377.627
+average response time [3]374.909
+average response time [4]379.54
+average response time [5]388.825
+average response time [6]398.065
+average response time [7]380.898
+average response time [8]372.367
+average response time [9]373.887
+average response time [10]394.80150000000003
+average response time [11]419.328
+average response time [12]431.551
+average response time [13]409.8215
+average response time [14]402.6855
+average response time [15]408.4635
+average response time [16]402.938
+average response time [17]405.4535
+average response time [18]401.94
+average response time [19]405.87649999999996
+average response time [20]468.275
+average response time [21]452.8945
+average response time [22]455.4905
+average response time [23]447.07550000000003
+average response time [24]437.55475
+average response time [25]436.00575000000003
+average response time [26]448.78375
+average response time [27]461.378
+average response time [28]435.91450000000003
+average response time [29]444.9535
+NUMBER OF THREADS: [1, 2, 4]
+WORKLOAD: HFU_LV 
+TOTAL EXECUTION TIME (Concurrent Parallel Requests): 13574.772
+
+

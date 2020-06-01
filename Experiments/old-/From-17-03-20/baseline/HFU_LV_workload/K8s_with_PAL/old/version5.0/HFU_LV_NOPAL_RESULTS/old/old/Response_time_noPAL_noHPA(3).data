@@ -1,0 +1,65 @@
+[[385.275]] 
+[[394.586]] 
+[[381.675]] 
+[[386.874]] 
+[[378.127]] 
+[[380.812]] 
+[[380.834]] 
+[[383.623]] 
+[[380.47]] 
+[[380.918]] 
+[[397.003, 432.821]] 
+[[433.945, 383.294]] 
+[[440.562, 390.12]] 
+[[428.337, 375.62]] 
+[[446.544, 393.199]] 
+[[428.354, 382.62]] 
+[[384.415, 429.271]] 
+[[426.663, 377.116]] 
+[[382.368, 423.327]] 
+[[452.389, 403.954]] 
+[[442.718, 386.766, 471.581, 501.539]] 
+[[384.515, 425.445, 505.121, 450.658]] 
+[[433.371, 384.755, 458.767, 504.985]] 
+[[438.836, 388.895, 519.628, 460.239]] 
+[[412.849, 495.389, 437.027, 523.762]] 
+[[519.513, 380.867, 415.841, 456.409]] 
+[[448.21, 488.57, 385.646, 514.298]] 
+[[513.198, 395.416, 433.986, 537.001]] 
+[[429.076, 377.031, 456.67, 485.225]] 
+[[461.458, 371.647, 411.702, 494.396]] 
+average response time [0]385.275
+average response time [1]394.586
+average response time [2]381.675
+average response time [3]386.874
+average response time [4]378.127
+average response time [5]380.812
+average response time [6]380.834
+average response time [7]383.623
+average response time [8]380.47
+average response time [9]380.918
+average response time [10]414.91200000000003
+average response time [11]408.6195
+average response time [12]415.341
+average response time [13]401.9785
+average response time [14]419.87149999999997
+average response time [15]405.48699999999997
+average response time [16]406.843
+average response time [17]401.8895
+average response time [18]402.84749999999997
+average response time [19]428.17150000000004
+average response time [20]450.651
+average response time [21]441.43475
+average response time [22]445.4695
+average response time [23]451.8995
+average response time [24]467.25675
+average response time [25]443.1575
+average response time [26]459.181
+average response time [27]469.90024999999997
+average response time [28]437.0005
+average response time [29]434.80075
+NUMBER OF THREADS: [1, 2, 4]
+WORKLOAD: HFU_LV; PAL CONFIG: default; NUMBER OF REPLICAS: 1 
+TOTAL EXECUTION TIME (Concurrent Parallel Requests): 13559.165
+
+

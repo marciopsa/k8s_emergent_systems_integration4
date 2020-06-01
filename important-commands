@@ -34,7 +34,7 @@ kubectl get hpa
 kubectl get pods
 
 # To examine the execution of one Pod
-kubectl exec -it [pod-id] bash
+kubectl exec -it [pod-id] -- /bin/bash
 
 
 
@@ -96,7 +96,26 @@ mysql> use data_collector;
 mysql> select * from data;
 
 
+============================= fbender ========================
+go version
+sudo rm -r go-1.6   // If necessary to remove old versions of Go
+go version
+sudo apt-get update
+sudo apt-get -y upgrade
+sudo wget https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
+sudo tar -xvf go1.13.3.linux-amd64.tar.gz
+sudo mv go /usr/local
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/fbender
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+go version
+go env
+go get -u github.com/facebookincubator/fbender
+go install github.com/facebookincubator/fbender
+fbender
 
+example of use: 
+$ fbender http throughput fixed -t 35.224.99.170:2020 -i queries.txt 1 2 4 8 16 32 64 65 66 67 68 69 70 -d 1s
 
-
+$ fbender http throughput fixed -t 35.224.99.170:2020 -i queries.txt -o results1.json 1 2 4 8 16 32 -d 1s --nostats
 

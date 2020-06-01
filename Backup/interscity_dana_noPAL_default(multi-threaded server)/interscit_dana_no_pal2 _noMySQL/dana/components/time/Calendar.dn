@@ -1,0 +1,16 @@
+uses time.DateTime
+
+interface CalendarLib {
+	void getLocalTime(DateTime d)
+	}
+
+component provides time.Calendar requires native CalendarLib lib
+	{
+	DateTime Calendar:getTime()
+		{
+		DateTime t = new DateTime()
+		lib.getLocalTime(t)
+		
+		return t
+		}
+	}

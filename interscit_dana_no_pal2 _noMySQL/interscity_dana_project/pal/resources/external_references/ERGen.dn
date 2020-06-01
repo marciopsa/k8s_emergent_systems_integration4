@@ -1,4 +1,0 @@
-interface ERGen {
-	void generateER()
-	void compileER()
-}

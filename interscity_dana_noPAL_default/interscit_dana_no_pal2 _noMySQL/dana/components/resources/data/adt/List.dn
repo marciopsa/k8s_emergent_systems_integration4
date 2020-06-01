@@ -1,0 +1,47 @@
+/*
+ {"description" : "An ordered list of items."}
+*/
+
+interface List{
+	/*
+	 {"@description" : "The contents of the list."}
+	*/
+	transfer Data content[]
+	transfer int iteratorIndex
+	
+	/*
+	 {"@description" : "Add a new item to the list; this function adds a reference (shallow copy) of the given item onto the list."}
+	*/
+	void add(Data item)
+	
+	/*
+	 {"@description" : "Remove an item from the list; this function locates the given item using a reference (===) check."}
+	*/
+	void remove(Data item)
+	
+	/*
+	 {"@description" : "Update an existing list item to a new version. This locates the given item using a reference (===) check, then replaces that reference with the reference to newVersion."}
+	*/
+	void update(Data item, Data newVersion)
+	
+	/*
+	 {"@description" : "Iterator: call this function to begin iterating over the list. Note that this function, together with getNext(), are not thread-safe: if getFirst() is called by thread A, which then begins using getNext() to iterate through the list, a second call of getFirst() by thread B will reset thread A's iterator.",
+			"@return" : "The first element in the list, or null if the list is empty."}
+	*/
+	Data getFirst()
+	
+	/*
+	 {"@description" : "Iterator: call this function to get the next element in the list.",
+			"@return" : "The next element in the list, or null if the end of the list has been reached."}
+	*/
+	Data getNext()
+	
+	/*
+	 {"@description" : "Iterator: call this function to check if we've reached the end of the list, such that calling getNext() again would return null as there are no more items.",
+			"@return" : "True if the end of the list has been reached; false otherwise."}
+	*/
+	bool isEnd()
+	
+	int getLength()
+	Data[] getContents()
+	}

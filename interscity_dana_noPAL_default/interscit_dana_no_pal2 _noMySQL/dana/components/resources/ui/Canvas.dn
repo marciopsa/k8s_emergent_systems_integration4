@@ -1,0 +1,27 @@
+uses Rect2D
+uses Line2D
+uses Color
+uses Point2D
+uses media.PixelMap
+uses media.WH
+uses Font
+uses Rect
+uses Point
+
+/*
+ {"description" : "Canvas defines a fundamental drawing API, typically used by a Window and offered as a painting surface to any objects on the window."}
+*/
+
+interface Canvas {
+	
+	void drawRect(Rect2D rect)
+	void drawRectOutline(Rect2D rect)
+	void drawLine(Line2D line)
+	void drawPoint(Point2D point)
+	void drawPixels(PixelMap map, int x, int y, int rotation)
+	void drawPixelsX(PixelMap map, Rect subRect, int x, int y, int scaledWidth, int scaledHeight, int rotation)
+	void drawText(Point2D position, Font f, char text[])
+	void pushSurface(Rect rect, int xscr, int yscr, byte alpha)
+	void popSurface()
+	
+	}
